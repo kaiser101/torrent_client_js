@@ -16,7 +16,7 @@ const downloadTorrent = (magnetURI) => {
     client.add(
         magnetURI,
         {
-            path: "G:/Windows 7 backup/Gargi/Downloads/Practice code/Html js/torrent_client",
+            path: ".",
         },
         (torrent) => {
             logger.info("name " + torrent.name);
