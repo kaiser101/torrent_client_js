@@ -12,7 +12,6 @@ const logger = log4js.getLogger("torrent");
 
 const downloadTorrent = (magnetURI) => {
     let client = new WebTorrent({
-        maxConns: 400,
         utp: true,
     });
 
