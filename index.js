@@ -25,7 +25,7 @@ const downloadTorrent = (magnetURI) => {
             logger.info("name " + torrent.name);
 
             torrent.on("done", () => {
-                console.log("torrent " + torrent.name + " download finished");
+                logger.info("torrent " + torrent.name + " download finished");
                 client.remove(magnetURI);
             });
 
@@ -46,7 +46,7 @@ const readFile = () => {
     });
 
     lineReader.on("line", (line) => {
-        console.log(line);
+        logger.info(line);
         downloadTorrent(line);
     });
 };
