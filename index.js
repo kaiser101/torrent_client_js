@@ -22,20 +22,21 @@ const downloadTorrent = (magnetURI) => {
             path: ".",
         },
         (torrent) => {
-            logger.info("name " + torrent.name);
+            logger.info("Name " + torrent.name);
 
             torrent.on("done", () => {
-                logger.info("torrent " + torrent.name + " download finished");
+                logger.info("Torrent " + torrent.name + " download finished");
+
                 client.destroy((err) => {
                     logger.warn(err);
                 });
             });
 
             torrent.on("download", (bytes) => {
-                logger.info("just downloaded: " + bytes);
-                logger.info("total downloaded: " + torrent.downloaded);
-                logger.info("download speed: " + torrent.downloadSpeed);
-                logger.info("progress: " + torrent.progress);
+                logger.info("Just downloaded: " + bytes);
+                logger.info("Total downloaded: " + torrent.downloaded);
+                logger.info("Download speed: " + torrent.downloadSpeed);
+                logger.info("Progress: " + torrent.progress);
                 logger.info();
             });
         }
