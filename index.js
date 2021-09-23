@@ -48,8 +48,8 @@ const downloadTorrent = (magnetURI) => {
                 logger.info(`Just downloaded: ${bytes}`);
                 [downloaded, downloadSpeed, progress] = _.map(
                     [
-                        torrent.downloaded / 1024 / 1024,
-                        torrent.downloadSpeed / 1024 / 1024,
+                        torrent.downloaded / 1048576,
+                        torrent.downloadSpeed / 1048576,
                         torrent.progress * 100,
                     ],
                     (x) =>
