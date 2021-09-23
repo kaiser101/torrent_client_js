@@ -3,6 +3,7 @@ const opts = require("./opts");
 const readLine = require("readline");
 const fs = require("fs");
 const log4js = require("log4js");
+const _ = require("lodash");
 
 log4js.configure({
     appenders: {
@@ -33,10 +34,10 @@ const downloadTorrent = (magnetURI) => {
             path: ".",
         },
         (torrent) => {
-            logger.info("Name " + torrent.name);
+            logger.info(`Name ${torrent.name}`);
 
             torrent.on("done", () => {
-                logger.info("Torrent " + torrent.name + " download finished");
+                logger.info(`Torrent ${torrent.name} download finished`);
 
                 client.destroy((err) => {
                     logger.warn(err);
@@ -44,10 +45,23 @@ const downloadTorrent = (magnetURI) => {
             });
 
             torrent.on("download", (bytes) => {
-                logger.info("Just downloaded: " + bytes);
-                logger.info("Total downloaded: " + torrent.downloaded);
-                logger.info("Download speed: " + torrent.downloadSpeed);
-                logger.info("Progress: " + torrent.progress);
+                logger.info(`Just downloaded: ${bytes}`);
+                [downloaded, downloadSpeed, progress] = _.map(
+                    [
+                        torrent.downloaded / 1024 / 1024,
+                        torrent.downloadSpeed / 1024 / 1024,
+                        torrent.progress * 100,
+                    ],
+                    (x) =>
+                        x.toLocaleString("en-US", {
+                            minimumIntegerDigits: 2,
+                            useGrouping: false,
+                            maximumFractionDigits: 2,
+                        })
+                );
+                logger.info(`Total downloaded: ${downloaded}`);
+                logger.info(`Download speed: ${downloadSpeed}`);
+                logger.info(`Progress: ${progress}`);
                 logger.info();
             });
         }
