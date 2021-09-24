@@ -22,6 +22,17 @@ log4js.configure({
 });
 const logger = log4js.getLogger("torrent");
 
+const bytesToMb = (x) => x / 1048576;
+
+const decToPerc = (x) => x * 100;
+
+const formatDecimal = (x) =>
+    x.toLocaleString("en-US", {
+        minimumIntegerDigits: 2,
+        useGrouping: false,
+        maximumFractionDigits: 2,
+    });
+
 const downloadTorrent = (magnetURI) => {
     let client = new WebTorrent({
         utp: true,
@@ -46,22 +57,21 @@ const downloadTorrent = (magnetURI) => {
 
             torrent.on("download", (bytes) => {
                 logger.info(`Just downloaded: ${bytes}`);
-                [downloaded, downloadSpeed, progress] = _.map(
+
+                const { downloaded, downloadSpeed, progress } = torrent;
+
+                const [_downloaded, _downloadSpeed, _progress] = _.map(
                     [
-                        torrent.downloaded / 1048576,
-                        torrent.downloadSpeed / 1048576,
-                        torrent.progress * 100,
+                        bytesToMb(downloaded),
+                        bytesToMb(downloadSpeed),
+                        decToPerc(progress),
                     ],
-                    (x) =>
-                        x.toLocaleString("en-US", {
-                            minimumIntegerDigits: 2,
-                            useGrouping: false,
-                            maximumFractionDigits: 2,
-                        })
+                    formatDecimal
                 );
-                logger.info(`Total downloaded: ${downloaded}`);
-                logger.info(`Download speed: ${downloadSpeed}`);
-                logger.info(`Progress: ${progress}`);
+
+                logger.info(`Total downloaded: ${_downloaded}`);
+                logger.info(`Download speed: ${_downloadSpeed}`);
+                logger.info(`Progress: ${_progress}`);
                 logger.info();
             });
         }
