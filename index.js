@@ -4,6 +4,7 @@ const readLine = require("readline");
 const fs = require("fs");
 const log4js = require("log4js");
 const _ = require("lodash");
+const { bytesToMb, decToPerc, formatDecimal } = require("./utils");
 
 log4js.configure({
     appenders: {
@@ -21,17 +22,6 @@ log4js.configure({
     categories: { default: { appenders: ["torrent"], level: "info" } },
 });
 const logger = log4js.getLogger("torrent");
-
-const bytesToMb = (x) => x / 1048576;
-
-const decToPerc = (x) => x * 100;
-
-const formatDecimal = (x) =>
-    x.toLocaleString("en-US", {
-        minimumIntegerDigits: 2,
-        useGrouping: false,
-        maximumFractionDigits: 2,
-    });
 
 const downloadTorrent = (magnetURI) => {
     let client = new WebTorrent({
