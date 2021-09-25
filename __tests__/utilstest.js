@@ -5,6 +5,10 @@ describe("Test utils module", () => {
         expect(bytesToMb(1048576)).toEqual(1);
     });
 
+    test("2 MB in bytes should be equals to 2 MB", () => {
+        expect(bytesToMb(2097152)).toEqual(2);
+    });
+
     test("Number to percentage", () => {
         expect(decToPerc(0.99)).toEqual(99);
     });
