@@ -51,16 +51,16 @@ const downloadTorrent = (magnetURI) => {
                 const { downloaded, downloadSpeed, progress } = torrent;
 
                 const [_downloaded, _downloadSpeed, _progress] = _.map(
-                    [
-                        bytesToMb(downloaded),
-                        bytesToMb(downloadSpeed),
-                        decToPerc(progress),
-                    ],
+                    _.zipWith(
+                        [bytesToMb, bytesToMb, decToPerc],
+                        [downloaded, downloadSpeed, progress],
+                        (x, y) => x(y)
+                    ),
                     formatDecimal
                 );
 
-                logger.info(`Total downloaded: ${_downloaded}`);
-                logger.info(`Download speed: ${_downloadSpeed}`);
+                logger.info(`Total downloaded: ${_downloaded} MB`);
+                logger.info(`Download speed: ${_downloadSpeed} Mbps`);
                 logger.info(`Progress: ${_progress}`);
                 logger.info();
             });
