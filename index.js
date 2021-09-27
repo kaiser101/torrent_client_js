@@ -40,6 +40,10 @@ const downloadTorrent = (magnetURI) => {
             torrent.on("done", () => {
                 logger.info(`Torrent ${torrent.name} download finished`);
 
+                client.remove(magnetURI, (err) => {
+                    logger.warn(err);
+                });
+
                 client.destroy((err) => {
                     logger.warn(err);
                 });
