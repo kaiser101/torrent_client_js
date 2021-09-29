@@ -2,26 +2,9 @@ const WebTorrent = require("webtorrent");
 const opts = require("./opts");
 const readLine = require("readline");
 const fs = require("fs");
-const log4js = require("log4js");
+const logger = require("./logger");
 const _ = require("lodash");
 const { bytesToMb, decToPerc, formatDecimal } = require("./utils");
-
-log4js.configure({
-    appenders: {
-        torrent: {
-            type: "dateFile",
-            pattern: "yyyy-MM-dd",
-            keepFileExt: true, //
-            maxLogSize: 1024 * 1024 * 10, //1024 * 1024 * 1 = 1M
-            backups: 2, //
-            alwaysIncludePattern: true, //
-            daysToKeep: 3, //
-            filename: "torrent.log",
-        },
-    },
-    categories: { default: { appenders: ["torrent"], level: "info" } },
-});
-const logger = log4js.getLogger("torrent");
 
 const downloadTorrent = (magnetURI) => {
     let client = new WebTorrent({
