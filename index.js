@@ -3,8 +3,8 @@ const opts = require("./opts");
 const readLine = require("readline");
 const fs = require("fs");
 const logger = require("./logger");
-const _ = require("lodash");
 const { bytesToMb, decToPerc, formatDecimal } = require("./utils");
+const { map, zipWith } = require("lodash");
 
 const downloadTorrent = (magnetURI) => {
     let client = new WebTorrent({
@@ -15,7 +15,7 @@ const downloadTorrent = (magnetURI) => {
         magnetURI,
         {
             announce: opts.getOpts().tracker.announce,
-            path: ".",
+            path: "./torrents",
         },
         (torrent) => {
             logger.info(`Name ${torrent.name}`);
@@ -37,8 +37,8 @@ const downloadTorrent = (magnetURI) => {
 
                 const { downloaded, downloadSpeed, progress } = torrent;
 
-                const [_downloaded, _downloadSpeed, _progress] = _.map(
-                    _.zipWith(
+                const [_downloaded, _downloadSpeed, _progress] = map(
+                    zipWith(
                         [bytesToMb, bytesToMb, decToPerc],
                         [downloaded, downloadSpeed, progress],
                         (x, y) => x(y)
@@ -60,10 +60,7 @@ const readFile = () => {
         input: fs.createReadStream("torrents.txt"),
     });
 
-    lineReader.on("line", (line) => {
-        logger.info(line);
-        downloadTorrent(line);
-    });
+    lineReader.on("line", downloadTorrent);
 };
 
 readFile();
