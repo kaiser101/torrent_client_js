@@ -33,7 +33,7 @@ const downloadTorrent = (magnetURI) => {
             });
 
             torrent.on("download", (bytes) => {
-                logger.info(`Just downloaded: ${bytes}`);
+                logger.info(`Torrent: ${magnetURI}`);
 
                 const { downloaded, downloadSpeed, progress } = torrent;
 
@@ -46,9 +46,8 @@ const downloadTorrent = (magnetURI) => {
                     formatDecimal
                 );
 
-                logger.info(
-                    `Torrent ${magnetURI}: Download speed ${_downloadSpeed} Mbps`
-                );
+                logger.info(`Total downloaded: ${_downloaded} MB`);
+                logger.info(`Download speed: ${_downloadSpeed} Mbps`);
                 logger.info(`Progress: ${_progress}`);
                 logger.info();
             });
