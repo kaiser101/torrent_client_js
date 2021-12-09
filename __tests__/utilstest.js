@@ -20,4 +20,12 @@ describe("Test utils module", () => {
     test("Number formatting", () => {
         expect(formatDecimal(0.7725)).toEqual("00.77");
     });
+
+    test("Milliseconds to seconds", () => {
+        expect(formatDecimal(60000)).toEqual(1);
+    });
+
+    test("120000 Milliseconds to seconds", () => {
+        expect(formatDecimal(120000)).toEqual(2);
+    });
 });

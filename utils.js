@@ -9,4 +9,6 @@ module.exports = {
             useGrouping: false,
             maximumFractionDigits: 2,
         }),
+
+    msToSec: (x) => x / 60000,
 };
