@@ -10,5 +10,5 @@ module.exports = {
             maximumFractionDigits: 2,
         }),
 
-    msToSec: (x) => x / 60000,
+    msToMins: (x) => x / 60000,
 };

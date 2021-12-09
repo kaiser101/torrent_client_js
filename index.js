@@ -3,7 +3,7 @@ const opts = require("./opts");
 const readLine = require("readline");
 const fs = require("fs");
 const logger = require("./logger");
-const { bytesToMb, decToPerc, formatDecimal, msToSec } = require("./utils");
+const { bytesToMb, decToPerc, formatDecimal, msToMins } = require("./utils");
 const { map, zipWith } = require("lodash");
 
 const downloadTorrent = (magnetURI) => {
@@ -41,7 +41,7 @@ const downloadTorrent = (magnetURI) => {
                 const [_downloaded, _downloadSpeed, _progress, _timeRemaining] =
                     map(
                         zipWith(
-                            [bytesToMb, bytesToMb, decToPerc, msToSec],
+                            [bytesToMb, bytesToMb, decToPerc, msToMins],
                             [
                                 downloaded,
                                 downloadSpeed,
