@@ -37,7 +37,7 @@ const downloadTorrent = (magnetURI) => {
             });
 
             torrent.on("download", (bytes) => {
-                logger.info(`Torrent: ${magnetURI}`);
+                logger.debug(`Torrent: ${magnetURI}`);
 
                 const { downloaded, downloadSpeed, progress, timeRemaining } =
                     torrent;
@@ -57,7 +57,7 @@ const downloadTorrent = (magnetURI) => {
                         formatDecimal
                     );
 
-                torrentMap.set(torrent.name, _progress);
+                torrentMap.set(torrent.name, { _progress, _downloadSpeed });
                 fs.writeFileSync(
                     "./torrentdata.json",
                     JSON.stringify([...torrentMap], null, 2),
