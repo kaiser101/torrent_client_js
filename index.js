@@ -6,6 +6,8 @@ const logger = require("./logger");
 const { bytesToMb, decToPerc, formatDecimal, msToMins } = require("./utils");
 const { map, zipWith } = require("lodash");
 
+let torrentMap = new Map();
+
 const downloadTorrent = (magnetURI) => {
     let client = new WebTorrent({
         utp: true,
@@ -30,6 +32,8 @@ const downloadTorrent = (magnetURI) => {
                 client.destroy((err) => {
                     logger.warn(err);
                 });
+
+                torrentMap.delete(torrent.name);
             });
 
             torrent.on("download", (bytes) => {
@@ -53,11 +57,18 @@ const downloadTorrent = (magnetURI) => {
                         formatDecimal
                     );
 
-                logger.info(`Total downloaded: ${_downloaded} MB`);
-                logger.info(`Download speed: ${_downloadSpeed} Mbps`);
-                logger.info(`Progress: ${_progress}`);
-                logger.info(`ETA: ${_timeRemaining}`);
-                logger.info();
+                torrentMap.set(torrent.name, _progress);
+                fs.writeFileSync(
+                    "./torrentdata.json",
+                    JSON.stringify([...torrentMap], null, 2),
+                    "utf-8"
+                );
+
+                logger.debug(`Total downloaded: ${_downloaded} MB`);
+                logger.debug(`Download speed: ${_downloadSpeed} Mbps`);
+                logger.debug(`Progress: ${_progress}`);
+                logger.debug(`ETA: ${_timeRemaining}`);
+                logger.debug();
             });
         }
     );
