@@ -5,6 +5,7 @@ const fs = require("fs");
 const logger = require("./logger");
 const { bytesToMb, decToPerc, formatDecimal, msToMins } = require("./utils");
 const { map, zipWith } = require("lodash");
+const sendMessage = require("./sendMessage");
 
 let torrentMap = new Map();
 
@@ -39,8 +40,13 @@ const downloadTorrent = (magnetURI) => {
             torrent.on("download", (bytes) => {
                 logger.debug(`Torrent: ${magnetURI}`);
 
-                const { downloaded, downloadSpeed, progress, timeRemaining } =
-                    torrent;
+                const {
+                    downloaded,
+                    downloadSpeed,
+                    progress,
+                    timeRemaining,
+                    infoHash,
+                } = torrent;
 
                 const [_downloaded, _downloadSpeed, _progress, _timeRemaining] =
                     map(
@@ -58,12 +64,17 @@ const downloadTorrent = (magnetURI) => {
                     );
 
                 torrentMap.set(torrent.name, { _progress, _downloadSpeed });
-                fs.writeFileSync(
-                    "./torrentdata.json",
-                    JSON.stringify([...torrentMap], null, 2),
-                    "utf-8"
-                );
+                // fs.writeFileSync(
+                //     "./torrentdata.json",
+                //     JSON.stringify([...torrentMap], null, 2),
+                //     "utf-8"
+                // );
 
+                const obj = {};
+                obj[infoHash] = _progress;
+                const msg = JSON.stringify(obj, null, 2);
+
+                sendMessage("torrent-queue", msg);
                 logger.debug(`Total downloaded: ${_downloaded} MB`);
                 logger.debug(`Download speed: ${_downloadSpeed} Mbps`);
                 logger.debug(`Progress: ${_progress}`);
