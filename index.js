@@ -70,8 +70,10 @@ const downloadTorrent = (magnetURI) => {
                 //     "utf-8"
                 // );
 
-                const obj = {};
-                obj[infoHash] = _progress;
+                const obj = {
+                    torrent: infoHash,
+                    progress: _progress,
+                };
                 const msg = JSON.stringify(obj, null, 2);
 
                 sendMessage("torrent-queue", msg);
