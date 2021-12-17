@@ -1,3 +1,4 @@
+const logger = require("./logger");
 const amqp = require("amqplib/callback_api");
 
 const sendMessage = (queue = "node_queue", msg = "Test message") => {
@@ -16,7 +17,7 @@ const sendMessage = (queue = "node_queue", msg = "Test message") => {
             channel.sendToQueue(queue, Buffer.from(msg), {
                 persistent: true,
             });
-            console.log("Sent '%s'", msg);
+            logger.info("Sent '%s'", msg);
         });
         setTimeout(() => {
             connection.close();
