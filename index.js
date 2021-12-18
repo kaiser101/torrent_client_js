@@ -64,11 +64,6 @@ const downloadTorrent = (magnetURI) => {
                     );
 
                 torrentMap.set(torrent.name, { _progress, _downloadSpeed });
-                // fs.writeFileSync(
-                //     "./torrentdata.json",
-                //     JSON.stringify([...torrentMap], null, 2),
-                //     "utf-8"
-                // );
 
                 const obj = {
                     torrent: infoHash,
