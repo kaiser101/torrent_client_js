@@ -37,7 +37,7 @@ const sendMessage = (queue = "node_queue", msg = "Test message") => {
                 .assertQueue(queue)
                 .then((ok) => channel.sendToQueue(queue, Buffer.from(msg)))
         )
-        .catch(console.warn);
+        .catch(logger.warn);
 
     logger.info("Sent '%s'", msg);
 };
