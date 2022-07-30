@@ -4,16 +4,14 @@ const readLine = require("readline");
 const fs = require("fs");
 const logger = require("./logger");
 const { bytesToMb, decToPerc, formatDecimal, msToMins } = require("./utils");
-const { map, zipWith } = require("lodash");
+const { map, zipWith, isEmpty } = require("lodash");
 const sendMessage = require("./sendMessage");
 
-let torrentMap = new Map();
+const client = new WebTorrent({
+    utp: true,
+});
 
 const downloadTorrent = (magnetURI) => {
-    let client = new WebTorrent({
-        utp: true,
-    });
-
     client.add(
         magnetURI,
         {
@@ -27,14 +25,14 @@ const downloadTorrent = (magnetURI) => {
                 logger.info(`Torrent ${torrent.name} download finished`);
 
                 client.remove(magnetURI, (err) => {
-                    logger.warn(err);
+                    logger.warn(err ?? "Torrent removed");
                 });
 
-                client.destroy((err) => {
-                    logger.warn(err);
-                });
-
-                torrentMap.delete(torrent.name);
+                if (isEmpty(client.torrents)) {
+                    client.destroy((err) => {
+                        logger.warn(err ?? "Torrent client killed");
+                    });
+                }
             });
 
             torrent.on("download", (bytes) => {
@@ -71,7 +69,8 @@ const downloadTorrent = (magnetURI) => {
                 };
                 const msg = JSON.stringify(obj, null, 2);
 
-                sendMessage("torrent-queue", msg);
+                process.env.SEND_MESSAGE && sendMessage("torrent-queue", msg);
+
                 logger.debug(`Total downloaded: ${_downloaded} MB`);
                 logger.debug(`Download speed: ${_downloadSpeed} Mbps`);
                 logger.debug(`Progress: ${_progress}`);

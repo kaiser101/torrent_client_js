@@ -1,3 +1,4 @@
+require("dotenv").config();
 const log4js = require("log4js");
 
 log4js.configure({
@@ -9,11 +10,13 @@ log4js.configure({
             maxLogSize: 1024 * 1024 * 10, //1024 * 1024 * 1 = 1M
             backups: 2, //
             alwaysIncludePattern: true, //
-            daysToKeep: 3, //
+            numBackups: 3, //
             filename: "torrent.log",
         },
     },
-    categories: { default: { appenders: ["torrent"], level: "info" } },
+    categories: {
+        default: { appenders: ["torrent"], level: process.env.LEVEL },
+    },
 });
 const logger = log4js.getLogger("torrent");
 
