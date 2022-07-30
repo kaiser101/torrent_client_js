@@ -1,3 +1,4 @@
+require("dotenv").config();
 const WebTorrent = require("webtorrent");
 const opts = require("./opts");
 const readLine = require("readline");
@@ -6,6 +7,8 @@ const logger = require("./logger");
 const { bytesToMb, decToPerc, formatDecimal, msToMins } = require("./utils");
 const { map, zipWith, isEmpty } = require("lodash");
 const sendMessage = require("./sendMessage");
+
+const torrentMap = new Map();
 
 const client = new WebTorrent({
     utp: true,
@@ -23,6 +26,8 @@ const downloadTorrent = (magnetURI) => {
 
             torrent.on("done", () => {
                 logger.info(`Torrent ${torrent.name} download finished`);
+
+                torrentMap.remove(torrent.name);
 
                 client.remove(magnetURI, (err) => {
                     logger.warn(err ?? "Torrent removed");
@@ -69,7 +74,8 @@ const downloadTorrent = (magnetURI) => {
                 };
                 const msg = JSON.stringify(obj, null, 2);
 
-                process.env.SEND_MESSAGE && sendMessage("torrent-queue", msg);
+                process.env.SEND_MESSAGE !== "0" &&
+                    sendMessage("torrent-queue", msg);
 
                 logger.debug(`Total downloaded: ${_downloaded} MB`);
                 logger.debug(`Download speed: ${_downloadSpeed} Mbps`);
