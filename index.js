@@ -1,14 +1,19 @@
-require("dotenv").config();
-const WebTorrent = require("webtorrent");
-const opts = require("./opts");
-const readLine = require("readline");
-const fs = require("fs");
-const logger = require("./logger");
-const { bytesToMb, decToPerc, formatDecimal, msToMins } = require("./utils");
-const { map, zipWith, isEmpty } = require("lodash");
-const sendMessage = require("./sendMessage");
+require('dotenv').config();
+const WebTorrent = require('webtorrent');
+const opts = require('./opts');
+const readLine = require('readline');
+const fs = require('fs');
+const logger = require('./logger');
+const { bytesToMb, decToPerc, formatDecimal, msToMins } = require('./utils');
+const { map, zipWith, isEmpty } = require('lodash');
+const sendMessage = require('./sendMessage');
 
-const torrentMap = new Map();
+let checkAllLines = false;
+
+const toggleTorrents = () => {
+    logger.info('Read all torrents');
+    checkAllLines = true;
+};
 
 const client = new WebTorrent({
     utp: true,
@@ -19,30 +24,35 @@ const downloadTorrent = (magnetURI) => {
         magnetURI,
         {
             announce: opts.getOpts().tracker.announce,
-            path: "./torrents",
+            path: './torrents',
         },
         (torrent) => {
             logger.info(`Name ${torrent.name}`);
 
-            torrent.on("done", () => {
+            if (
+                process.env.IGNORE_LARGE_TORRENTS === 'true' &&
+                torrent.length > 3 * 1024 ** 3
+            ) {
+                client.remove(magnetURI, (err) => {
+                    logger.warn(err ?? 'Torrent very large, removed!');
+                });
+            }
+
+            torrent.on('done', () => {
                 logger.info(`Torrent ${torrent.name} download finished`);
 
-                torrentMap.remove(torrent.name);
-
                 client.remove(magnetURI, (err) => {
-                    logger.warn(err ?? "Torrent removed");
+                    logger.warn(err ?? 'Torrent removed');
                 });
 
-                if (isEmpty(client.torrents)) {
+                if (checkAllLines && isEmpty(client.torrents)) {
                     client.destroy((err) => {
-                        logger.warn(err ?? "Torrent client killed");
+                        logger.warn(err ?? 'Torrent client killed');
                     });
                 }
             });
 
-            torrent.on("download", (bytes) => {
-                logger.debug(`Torrent: ${magnetURI}`);
-
+            torrent.on('download', (bytes) => {
                 const {
                     downloaded,
                     downloadSpeed,
@@ -66,22 +76,24 @@ const downloadTorrent = (magnetURI) => {
                         formatDecimal
                     );
 
-                torrentMap.set(torrent.name, { _progress, _downloadSpeed });
-
                 const obj = {
                     torrent: infoHash,
                     progress: _progress,
                 };
                 const msg = JSON.stringify(obj, null, 2);
 
-                process.env.SEND_MESSAGE !== "0" &&
-                    sendMessage("torrent-queue", msg);
+                process.env.SEND_MESSAGE !== '0' &&
+                    sendMessage('torrent-queue', msg);
 
-                logger.debug(`Total downloaded: ${_downloaded} MB`);
-                logger.debug(`Download speed: ${_downloadSpeed} Mbps`);
-                logger.debug(`Progress: ${_progress}`);
-                logger.debug(`ETA: ${_timeRemaining}`);
-                logger.debug();
+                const torrentObj = {
+                    infoHash,
+                    download: _downloaded,
+                    downloadSpeed: _downloadSpeed,
+                    progress: _progress,
+                    timeRemaining: _timeRemaining,
+                };
+
+                logger.debug(JSON.stringify(torrentObj, null, 2));
             });
         }
     );
@@ -89,10 +101,10 @@ const downloadTorrent = (magnetURI) => {
 
 const readFile = () => {
     let lineReader = readLine.createInterface({
-        input: fs.createReadStream("torrents.txt"),
+        input: fs.createReadStream('torrents.txt'),
     });
 
-    lineReader.on("line", downloadTorrent);
+    lineReader.on('line', downloadTorrent).on('close', toggleTorrents);
 };
 
 readFile();
