@@ -7,6 +7,7 @@ const logger = require('./logger');
 const { bytesToMb, decToPerc, formatDecimal, msToMins } = require('./utils');
 const { map, zipWith, isEmpty } = require('lodash');
 const sendMessage = require('./sendMessage');
+const moment = require('moment');
 
 let checkAllLines = false;
 
@@ -27,6 +28,7 @@ const downloadTorrent = (magnetURI) => {
             path: './torrents',
         },
         (torrent) => {
+            const start = moment();
             logger.info(`Name ${torrent.name}`);
 
             if (
@@ -40,6 +42,10 @@ const downloadTorrent = (magnetURI) => {
 
             torrent.on('done', () => {
                 logger.info(`Torrent ${torrent.name} download finished`);
+
+                const end = moment();
+                const durn = moment.duration(end.diff(start)).as('minutes');
+                logger.info(`Torrent finished in ${durn} minutes`);
 
                 client.remove(magnetURI, (err) => {
                     logger.warn(err ?? 'Torrent removed');
@@ -87,7 +93,7 @@ const downloadTorrent = (magnetURI) => {
 
                 const torrentObj = {
                     infoHash,
-                    download: _downloaded,
+                    downloaded: _downloaded,
                     downloadSpeed: _downloadSpeed,
                     progress: _progress,
                     timeRemaining: _timeRemaining,
