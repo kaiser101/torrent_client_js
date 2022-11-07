@@ -45,7 +45,9 @@ const downloadTorrent = (magnetURI) => {
 
                 const end = moment();
                 const durn = moment.duration(end.diff(start)).as('minutes');
-                logger.info(`Torrent finished in ${durn} minutes`);
+                logger.info(
+                    `Torrent finished in ${formatDecimal(durn)} minutes`
+                );
 
                 client.remove(magnetURI, (err) => {
                     logger.warn(err ?? 'Torrent removed');
