@@ -1,8 +1,8 @@
-const logger = require("./logger");
-const amqp = require("amqplib");
+import logger from './logger.js';
+import amqp from 'amqplib';
 
-const sendMessage = (queue = "node_queue", msg = "Test message") => {
-    const amqpconn = amqp.connect("amqp://localhost");
+const sendMessage = (queue = 'node_queue', msg = 'Test message') => {
+    const amqpconn = amqp.connect('amqp://localhost');
 
     amqpconn
         .then((connection) => connection.createChannel())
@@ -16,4 +16,4 @@ const sendMessage = (queue = "node_queue", msg = "Test message") => {
     logger.info("Sent '%s'", msg);
 };
 
-module.exports = sendMessage;
+export default sendMessage;

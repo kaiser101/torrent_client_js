@@ -1,6 +1,4 @@
-const config = {
-    verbose: true,
-    testMatch: ["**/__tests__/*.js?(x)"],
+export default {
+    testEnvironment: 'jest-environment-node',
+    transform: {},
 };
-
-module.exports = config;

@@ -1,5 +1,7 @@
-require('dotenv').config();
-const log4js = require('log4js');
+import dotenv from 'dotenv';
+import log4js from 'log4js';
+
+dotenv.config();
 
 log4js.configure({
     appenders: {
@@ -20,4 +22,4 @@ log4js.configure({
 });
 const logger = log4js.getLogger('torrent');
 
-module.exports = logger;
+export default logger;

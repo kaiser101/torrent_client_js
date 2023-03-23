@@ -1,8 +1,8 @@
-const opts = require("../opts");
+import getOpts from '../opts.js';
 
-test("opts is an array of announce urls", () => {
-    expect(opts.getOpts().tracker.announce).toEqual(
-        expect.arrayContaining(["udp://tc.animereactor.ru:8082/announce"])
+test('getOpts is an array of announce urls', () => {
+    expect(getOpts().tracker.announce).toEqual(
+        expect.arrayContaining(['udp://tc.animereactor.ru:8082/announce'])
     );
-    expect(opts.getOpts().tracker.announce.length).toEqual(134);
+    expect(getOpts().tracker.announce.length).toEqual(397);
 });

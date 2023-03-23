@@ -1,13 +1,17 @@
-require('dotenv').config();
-const WebTorrent = require('webtorrent');
-const opts = require('./opts');
-const readLine = require('readline');
-const fs = require('fs');
-const logger = require('./logger');
-const { bytesToMb, decToPerc, formatDecimal, msToMins } = require('./utils');
-const { map, zipWith, isEmpty } = require('lodash');
-const sendMessage = require('./sendMessage');
-const moment = require('moment');
+import dotenv from 'dotenv';
+import WebTorrent from 'webtorrent';
+import getOpts from './opts.js';
+import readLine from 'readline';
+import fs from 'fs';
+import logger from './logger.js';
+import { bytesToMb, decToPerc, formatDecimal, msToMins } from './utils.js';
+import _ from 'lodash';
+import sendMessage from './sendMessage.js';
+import moment from 'moment';
+
+const { map, zipWith, isEmpty } = _;
+
+dotenv.config();
 
 let checkAllLines = false;
 
@@ -92,7 +96,7 @@ const downloadTorrent = (magnetURI) => {
     client.add(
         magnetURI,
         {
-            announce: opts.getOpts().tracker.announce,
+            announce: getOpts().tracker.announce,
             path: './torrents',
         },
         torrentOps(magnetURI)

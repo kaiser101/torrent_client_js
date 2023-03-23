@@ -403,4 +403,4 @@ const getOpts = () => {
         },
     };
 };
-exports.getOpts = getOpts;
+export default getOpts;
