@@ -8,8 +8,7 @@ import { bytesToMb, decToPerc, formatDecimal, msToMins } from './utils.js';
 import _ from 'lodash';
 import sendMessage from './sendMessage.js';
 import moment from 'moment';
-
-const { map, zipWith, isEmpty } = _;
+import { map, zipWith, isEmpty } from 'ramda';
 
 dotenv.config();
 
@@ -47,12 +46,12 @@ const downloadOp = (torrent) => (bytes) => {
         torrent;
 
     const [_downloaded, _downloadSpeed, _progress, _timeRemaining] = map(
+        formatDecimal,
         zipWith(
+            (x, y) => x(y),
             [bytesToMb, bytesToMb, decToPerc, msToMins],
-            [downloaded, downloadSpeed, progress, timeRemaining],
-            (x, y) => x(y)
-        ),
-        formatDecimal
+            [downloaded, downloadSpeed, progress, timeRemaining]
+        )
     );
 
     const obj = {
