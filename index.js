@@ -92,6 +92,8 @@ const torrentOps = (magnetURI) => (torrent) => {
 };
 
 const downloadTorrent = (magnetURI) => {
+    logger.info(`magnetURI ${magnetURI}`);
+
     client.add(
         magnetURI,
         {
