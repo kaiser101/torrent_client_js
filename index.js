@@ -8,6 +8,7 @@ import { bytesToMb, decToPerc, formatDecimal, msToMins } from './utils.js';
 import _ from 'lodash';
 import sendMessage from './sendMessage.js';
 import moment from 'moment';
+
 import { map, zipWith, isEmpty } from 'ramda';
 
 dotenv.config();
@@ -44,6 +45,10 @@ const doneOp = (client, magnetURI, torrent, start) => () => {
 const downloadOp = (torrent) => (bytes) => {
     const { downloaded, downloadSpeed, progress, timeRemaining, infoHash } =
         torrent;
+
+    // logger.warn('No seeds');
+    // if (downloadSpeed == 0 && timeRemaining / 60000 > 1000) torrent.pause();
+    // return;
 
     const [_downloaded, _downloadSpeed, _progress, _timeRemaining] = map(
         formatDecimal,
@@ -89,6 +94,10 @@ const torrentOps = (magnetURI) => (torrent) => {
     torrent.on('done', doneOp(client, magnetURI, torrent, start));
 
     torrent.on('download', downloadOp(torrent));
+
+    torrent.on('noPeers', (announceType) =>
+        logger.warn(`noPeers for = ${announceType}`)
+    );
 };
 
 const downloadTorrent = (magnetURI) => {
