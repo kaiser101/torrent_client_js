@@ -1,7 +1,16 @@
+movies and office/**
 node_modules/**
+torrents/**
+
+*.log
+*.bak
+
 package-lock.json
 torrents.txt
 next.txt
 download.txt
-*.log
-torrents/**
+torrent.log
+bun.lock
+
+torrent_client_js.sublime-project
+torrent_client_js.sublime-workspace
